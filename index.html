@@ -1,0 +1,628 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#1c2330;--bg4:#21262d;--bg5:#282e38;
+  --b:#30363d;--b2:#3d444d;--b3:#454d59;
+  --t:#e6edf3;--t2:#8b949e;--t3:#656d76;--t4:#484f58;
+  --blue:#2f81f7;--blue2:#1f4f8a;--blue3:rgba(47,129,247,.13);
+  --green:#3fb950;--green2:#1a3d22;--green3:rgba(63,185,80,.13);
+  --amber:#d29922;--amber2:#3d2e0a;--amber3:rgba(210,153,34,.13);
+  --red:#f85149;--red2:#3d1210;--red3:rgba(248,81,73,.13);
+  --purple:#bc8cff;--purple3:rgba(188,140,255,.13);
+  --teal:#39d3bb;--teal3:rgba(57,211,187,.12);
+}
+body{background:var(--bg);color:var(--t);font-family:system-ui,sans-serif;font-size:13px;line-height:1.5}
+.db{padding:16px;max-width:1100px;margin:0 auto}
+
+.hdr{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--b)}
+.hdr-l .eye{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--t3);margin-bottom:3px}
+.hdr-l .ttl{font-size:18px;font-weight:700;color:var(--t);letter-spacing:-.3px}
+.hdr-l .sub{font-size:11px;color:var(--t3);margin-top:2px}
+.hdr-r{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tag{padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;border:1px solid}
+.tag-g{background:var(--green3);color:var(--green);border-color:rgba(63,185,80,.3)}
+.tag-b{background:var(--blue3);color:var(--blue);border-color:rgba(47,129,247,.3)}
+.tag-a{background:var(--amber3);color:var(--amber);border-color:rgba(210,153,34,.3)}
+.tag-r{background:var(--red3);color:var(--red);border-color:rgba(248,81,73,.3)}
+
+.nav{display:flex;gap:2px;background:var(--bg3);padding:3px;border-radius:7px;border:1px solid var(--b);margin-bottom:14px;flex-wrap:wrap}
+.navb{flex:1;min-width:90px;padding:5px 8px;border-radius:5px;border:none;background:transparent;color:var(--t3);font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .18s}
+.navb.on{background:var(--bg);color:var(--t);border:1px solid var(--b)}
+.page{display:none}.page.on{display:block}
+
+.krow{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:14px}
+.kpi{background:var(--bg2);border:1px solid var(--b);border-radius:7px;padding:12px 14px;position:relative;overflow:hidden;cursor:default}
+.kpi:hover{border-color:var(--b2)}
+.kpi-lbl{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin-bottom:4px}
+.kpi-v{font-family:monospace;font-size:20px;font-weight:600;line-height:1}
+.kpi-s{font-size:9px;color:var(--t3);margin-top:4px}
+.kpi-bar{position:absolute;bottom:0;left:0;right:0;height:2px}
+
+.panel{background:var(--bg2);border:1px solid var(--b);border-radius:7px;padding:14px;margin-bottom:12px}
+.ph{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.ph span{font-size:9px;font-weight:400;letter-spacing:.04em;color:var(--t4)}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.g3{display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:12px}
+@media(max-width:640px){.g2,.g3{grid-template-columns:1fr}}
+
+/* GANTT */
+.gmonths{display:grid;gap:0;font-size:8px;color:var(--t3);letter-spacing:.05em;text-align:center;margin-bottom:5px}
+.grow2{display:grid;align-items:center;min-height:26px;margin-bottom:2px;gap:0}
+.gcell2{height:22px;padding:1px 1px}
+.gbar2{height:100%;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:7.5px;font-weight:600;letter-spacing:.05em;overflow:hidden;cursor:default;transition:filter .15s}
+.gbar2:hover{filter:brightness(1.15)}
+.glbl{font-size:10px;color:var(--t);font-weight:600;padding-right:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+.glbl small{display:block;font-size:8px;color:var(--t3);font-weight:400;letter-spacing:.03em}
+
+/* ERP MATRIX TABLE */
+.xtbl{width:100%;border-collapse:collapse;font-size:10px;overflow-x:auto}
+.xtbl th{padding:5px 7px;border-bottom:1px solid var(--b);color:var(--t3);font-size:8.5px;letter-spacing:.07em;text-transform:uppercase;text-align:center;white-space:nowrap;font-weight:600}
+.xtbl th:first-child{text-align:left;min-width:130px}
+.xtbl td{padding:5px 7px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:var(--t2);font-size:10px;vertical-align:middle}
+.xtbl td:first-child{text-align:left;font-weight:600;color:var(--t);font-size:10.5px}
+.xtbl tr:hover td{background:rgba(255,255,255,.025)}
+.xtbl .rec{background:rgba(47,129,247,.06);border-left:2px solid var(--blue)}
+.xtbl .rec2{background:rgba(63,185,80,.06);border-left:2px solid var(--green)}
+.pip{display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:10px;font-size:9px;font-weight:600;white-space:nowrap}
+.psi{background:var(--green3);color:var(--green)}
+.ppa{background:var(--amber3);color:var(--amber)}
+.pno{background:var(--red3);color:var(--red)}
+
+/* RISK TABLE */
+.rtbl{width:100%;border-collapse:collapse;font-size:10px}
+.rtbl th{padding:4px 7px;border-bottom:1px solid var(--b);color:var(--t3);font-size:8.5px;letter-spacing:.07em;text-transform:uppercase;font-weight:600;text-align:left}
+.rtbl td{padding:5px 7px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--t2);font-size:10px;vertical-align:top}
+.rtbl tr:hover td{background:rgba(255,255,255,.025)}
+.rlvl{display:inline-flex;align-items:center;padding:1px 6px;border-radius:10px;font-size:8.5px;font-weight:600;white-space:nowrap}
+
+/* COUNTRY CARDS */
+.ccgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:7px}
+.cc{background:var(--bg3);border:1px solid var(--b);border-radius:6px;padding:9px;cursor:default;transition:border-color .18s}
+.cc:hover{border-color:var(--b2)}
+.cc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px}
+.cc-f{font-size:17px;line-height:1}
+.cc-st{font-size:7.5px;font-weight:600;letter-spacing:.05em;padding:1px 4px;border-radius:7px}
+.cc-nm{font-size:10.5px;font-weight:600;color:var(--t);margin-bottom:1px}
+.cc-erp{font-size:8.5px;color:var(--t3)}
+.cc-dots{display:flex;gap:2px;margin-top:4px}
+.ccd{width:5px;height:5px;border-radius:50%}
+
+/* TCO BARS */
+.tcowrap{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.tco-row{display:flex;align-items:center;gap:8px}
+.tco-lbl{width:110px;font-size:10px;color:var(--t2);text-align:right;flex-shrink:0}
+.tco-bar-bg{flex:1;background:var(--bg4);border-radius:2px;height:18px;position:relative;overflow:hidden;cursor:default}
+.tco-fill{height:100%;border-radius:2px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:9px;font-weight:600;color:rgba(255,255,255,.9);transition:width .5s ease;white-space:nowrap}
+.tco-txt{font-family:monospace;font-size:9.5px;color:var(--t3);width:80px;flex-shrink:0}
+
+/* SCENARIO BTNS */
+.scbtns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.scb{padding:4px 11px;border-radius:4px;border:1px solid var(--b);background:var(--bg3);color:var(--t2);font-size:9.5px;font-weight:600;letter-spacing:.05em;cursor:pointer;transition:all .18s}
+.scb.on{border-color:var(--blue);color:var(--blue);background:var(--blue3)}
+
+/* TRIGGER ITEMS */
+.trig-list{display:flex;flex-direction:column;gap:7px}
+.trig-item{padding:9px 11px;background:var(--bg3);border-radius:5px;border:1px solid var(--b);cursor:default;transition:border-color .18s}
+.trig-item:hover{border-color:var(--b2)}
+.trig-item.urgent{border-color:var(--red);background:rgba(248,81,73,.04)}
+.trig-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;flex-wrap:wrap;gap:4px}
+.trig-nm{font-size:11px;font-weight:600;color:var(--t)}
+.trig-body{font-size:9.5px;color:var(--t3);line-height:1.45;margin-bottom:5px}
+.meter-bg{flex:1;height:4px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.meter-fill{height:100%;border-radius:2px;transition:width .5s ease}
+.meter-wrap{display:flex;align-items:center;gap:7px}
+.meter-lbl{font-family:monospace;font-size:8.5px;color:var(--t3);white-space:nowrap;min-width:55px;text-align:right}
+
+/* SCENARIO DECISION TREE */
+.dtree{display:flex;flex-direction:column;gap:8px}
+.dnode{display:grid;grid-template-columns:34px 1fr;gap:8px;align-items:flex-start;padding:10px;background:var(--bg3);border:1px solid var(--b);border-radius:6px;cursor:default;transition:border-color .18s}
+.dnode:hover{border-color:var(--b2)}
+.dnum{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.dn-ttl{font-size:11.5px;font-weight:600;color:var(--t);margin-bottom:2px}
+.dn-period{font-size:8.5px;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px}
+.dn-body{font-size:9.5px;color:var(--t3);line-height:1.5}
+.dn-status{font-size:8.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:2px 7px;border-radius:10px;height:fit-content;white-space:nowrap;align-self:flex-start}
+
+/* RENEGOTIATION BOX */
+.rbox{background:rgba(57,211,187,.07);border:1px solid rgba(57,211,187,.3);border-radius:7px;padding:14px;margin-bottom:12px}
+.rbox .rtitle{font-size:11px;font-weight:700;color:var(--teal);margin-bottom:6px;letter-spacing:.05em;text-transform:uppercase}
+.rbox .rbody{font-size:10.5px;color:var(--t2);line-height:1.6}
+
+/* COST COMPARISON */
+.cost-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:12px}
+.cost-card{background:var(--bg3);border:1px solid var(--b);border-radius:6px;padding:10px 12px;cursor:default;transition:border-color .18s}
+.cost-card:hover{border-color:var(--b2)}
+.cost-card.highlight{border-color:var(--blue)}
+.cost-card.rec{border-color:var(--green)}
+.cc-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.cc-name{font-size:11px;font-weight:700;color:var(--t)}
+.cc-year1{font-family:monospace;font-size:16px;font-weight:600;margin-bottom:2px}
+.cc-break{font-size:9px;color:var(--t3);margin-top:4px}
+.cc-rows{margin-top:6px;border-top:1px solid var(--b);padding-top:6px}
+.cc-row{display:flex;justify-content:space-between;font-size:9px;color:var(--t3);padding:2px 0}
+.cc-row span:last-child{font-family:monospace;color:var(--t2)}
+</style>
+
+<div class="db">
+
+<div class="hdr">
+  <div class="hdr-l">
+    <div class="eye">Alegra Group · ERP Strategy Command Center v2.0</div>
+    <div class="ttl">Dashboard de Decisión ERP — 9 Países · Análisis Completo</div>
+    <div class="sub">Incluye análisis de alternativas Julián (CFO) · Datos reales marzo 2026 · Estrategia renegociación NetSuite</div>
+  </div>
+  <div class="hdr-r">
+    <span class="tag tag-g">● Activo · Mar 2026</span>
+    <span class="tag tag-b">9 Entidades</span>
+    <span class="tag tag-a">7 Personas</span>
+    <span class="tag tag-r">Confidencial</span>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="navb on" onclick="pg('p1',this)">Resumen Ejecutivo</button>
+  <button class="navb" onclick="pg('p2',this)">Gantt 9 Países</button>
+  <button class="navb" onclick="pg('p3',this)">Comparativo ERPs</button>
+  <button class="navb" onclick="pg('p4',this)">TCO & Costos</button>
+  <button class="navb" onclick="pg('p5',this)">Análisis de Riesgo</button>
+  <button class="navb" onclick="pg('p6',this)">Árbol de Decisión</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE 1: RESUMEN EJECUTIVO
+     ══════════════════════════════════════════════════════ -->
+<div class="page on" id="p1">
+  <div class="krow">
+    <div class="kpi"><div class="kpi-lbl">TCO Esperado 3 años</div><div class="kpi-v" style="color:var(--blue)">$315K</div><div class="kpi-s">Opción 1 · rango $210K–$445K</div><div class="kpi-bar" style="background:var(--blue)"></div></div>
+    <div class="kpi"><div class="kpi-lbl">Ahorro vs Full NetSuite</div><div class="kpi-v" style="color:var(--green)">$310K</div><div class="kpi-s">vs $625K TCO Opción 3 (NS full)</div><div class="kpi-bar" style="background:var(--green)"></div></div>
+    <div class="kpi"><div class="kpi-lbl">NS renovación negociada</div><div class="kpi-v" style="color:var(--teal)">-20%</div><div class="kpi-s">Objetivo: $29K–60K/yr · desde $36–80K</div><div class="kpi-bar" style="background:var(--teal)"></div></div>
+    <div class="kpi"><div class="kpi-lbl">Presupuesto MVE</div><div class="kpi-v" style="color:var(--amber)">$70K</div><div class="kpi-s">Fase 1 aprobada · Fases 2–5 gated</div><div class="kpi-bar" style="background:var(--amber)"></div></div>
+    <div class="kpi"><div class="kpi-lbl">Trigger migración CO/CA</div><div class="kpi-v" style="color:var(--red)">$40K/yr</div><div class="kpi-s">Overhead dual · evaluar M15+</div><div class="kpi-bar" style="background:var(--red)"></div></div>
+    <div class="kpi"><div class="kpi-lbl">Países sin ERP hoy</div><div class="kpi-v" style="color:var(--purple)">7 / 9</div><div class="kpi-s">MX · PE · AR · DO · ES · PA · CR</div><div class="kpi-bar" style="background:var(--purple)"></div></div>
+  </div>
+
+  <div class="rbox">
+    <div class="rtitle">Estrategia de Renegociación NetSuite (acción inmediata — paralela a la implementación)</div>
+    <div class="rbody">
+      Mientras se implementan los 7 países en Odoo (M1–M14), <strong style="color:var(--teal)">NetSuite se negocia agresivamente</strong> como palanca de reducción de costo. Mencionar las alternativas evaluadas (Odoo, Sage Intacct) como leverage. Objetivos: (1) Descuento 15–25% por renovación multi-anual → ahorra $5K–$20K/año. (2) Eliminar módulos y usuarios sin uso. (3) Negociar tope de incremento anual del 3–5%. (4) Resultado esperado: $29K–$60K/año. Esta negociación es independiente de la decisión final de migrar o no en M15+.
+    </div>
+  </div>
+
+  <div class="g3">
+    <div class="panel">
+      <div class="ph">Estado de Fases — Todos los Países</div>
+      <div class="dtree">
+        <div class="dnode"><div class="dnum" style="background:var(--blue3);color:var(--blue)">1</div><div><div class="dn-ttl">Diseño Global — CoA + APIs</div><div class="dn-period">Mes 1–3 · $0 adicional</div><div class="dn-body">CoA Global 6 segmentos. Router Alegra NS↔Odoo. Matriz fiscal 9 países. Negociación NS simultánea.</div></div><div class="dn-status" style="background:var(--blue3);color:var(--blue)">Activa</div></div>
+        <div class="dnode"><div class="dnum" style="background:var(--bg4);color:var(--t3)">2</div><div><div class="dn-ttl">MVE México — CFDI 4.0, DIOT</div><div class="dn-period">Mes 4–8 · $35K–$70K</div><div class="dn-body">País más complejo. Proof-of-concept Odoo. Controller MX activo desde M1.</div></div><div class="dn-status" style="background:var(--bg4);color:var(--t3)">Pendiente</div></div>
+        <div class="dnode"><div class="dnum" style="background:var(--bg4);color:var(--t3)">3</div><div><div class="dn-ttl">Wave 2 — PE, AR, DO, ES, PA, CR</div><div class="dn-period">Mes 9–11 · Templates MX</div><div class="dn-body">6 países con templates reutilizables. IAS 29 Argentina. PLE Perú. 606/607 RD. SII España.</div></div><div class="dn-status" style="background:var(--bg4);color:var(--t3)">Pendiente</div></div>
+        <div class="dnode"><div class="dnum" style="background:var(--bg4);color:var(--t3)">4</div><div><div class="dn-ttl">Estabilización + Consolidación</div><div class="dn-period">Mes 12–14 · Data layer</div><div class="dn-body">Pipeline IAS 21. Eliminaciones IC. OCI automatizado. D+7 close consolidado.</div></div><div class="dn-status" style="background:var(--bg4);color:var(--t3)">Pendiente</div></div>
+        <div class="dnode"><div class="dnum" style="background:var(--amber2);color:var(--amber)">5</div><div><div class="dn-ttl">Decisión CO + CA — Trigger $40K</div><div class="dn-period">Mes 15+ · Datos reales</div><div class="dn-body">3 escenarios: Mantener dual / Migrar a Odoo / Acelerar si Oracle sube &gt;15%.</div></div><div class="dn-status" style="background:var(--amber3);color:var(--amber)">Condicional</div></div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="panel" style="margin-bottom:0">
+        <div class="ph">Países por ERP</div>
+        <div class="ccgrid">
+          <div class="cc"><div class="cc-top"><span class="cc-f">🇨🇴</span><span class="cc-st" style="background:var(--green3);color:var(--green)">Live</span></div><div class="cc-nm">Colombia</div><div class="cc-erp">NetSuite · Prod.</div><div class="cc-dots"><div class="ccd" style="background:var(--red)"></div><div class="ccd" style="background:var(--red)"></div><div class="ccd" style="background:var(--red)"></div></div></div>
+          <div class="cc"><div class="cc-top"><span class="cc-f">🇨🇦</span><span class="cc-st" style="background:var(--green3);color:var(--green)">Live</span></div><div class="cc-nm">Canadá</div><div class="cc-erp">NetSuite · Prod.</div><div class="cc-dots"><div class="ccd" style="background:var(--amber)"></div><div class="ccd" style="background:var(--amber)"></div><div class="ccd" style="background:var(--bg4)"></div></div></div>
+          <div class="cc" style="border-color:var(--blue)"><div class="cc-top"><span class="cc-f">🇲🇽</span><span class="cc-st" style="background:var(--blue3);color:var(--blue)">W1</span></div><div class="cc-nm">México</div><div class="cc-erp">Odoo · MVE</div><div class="cc-dots"><div class="ccd" style="background:var(--red)"></div><div class="ccd" style="background:var(--red)"></div><div class="ccd" style="background:var(--red)"></div></div></div>
+          <div class="cc"><div class="cc-top"><span class="cc-f">🇵🇪</span><span class="cc-st" style="background:var(--blue3);color:var(--blue)">W1</span></div><div class="cc-nm">Perú</div><div class="cc-erp">Odoo · PLE</div><div class="cc-dots"><div class="ccd" style="background:var(--red)"></div><div class="ccd" style="background:var(--red)"></div><div class="ccd" style="background:var(--bg4)"></div></div></div>
+          <div class="cc"><div class="cc-top"><span class="cc-f">🇦🇷</span><span class="cc-st" style="background:var(--blue3);color:var(--blue)">W1</span></div><div class="cc-nm">Argentina</div><div class="cc-erp">Odoo · IAS29</div><div class="cc-dots"><div class="ccd" style="background:var(--red)"></div><div class="ccd" style="background:var(--red)"></div><div class="ccd" style="background:var(--red)"></div></div></div>
+          <div class="cc"><div class="cc-top"><span class="cc-f">🇩🇴</span><span class="cc-st" style="background:var(--amber3);color:var(--amber)">W2</span></div><div class="cc-nm">Rep. Dom.</div><div class="cc-erp">Odoo · 606/607</div><div class="cc-dots"><div class="ccd" style="background:var(--amber)"></div><div class="ccd" style="background:var(--amber)"></div><div class="ccd" style="background:var(--bg4)"></div></div></div>
+          <div class="cc"><div class="cc-top"><span class="cc-f">🇪🇸</span><span class="cc-st" style="background:var(--amber3);color:var(--amber)">W2</span></div><div class="cc-nm">España</div><div class="cc-erp">Odoo · SII</div><div class="cc-dots"><div class="ccd" style="background:var(--amber)"></div><div class="ccd" style="background:var(--amber)"></div><div class="ccd" style="background:var(--bg4)"></div></div></div>
+          <div class="cc"><div class="cc-top"><span class="cc-f">🇵🇦</span><span class="cc-st" style="background:var(--amber3);color:var(--amber)">W2</span></div><div class="cc-nm">Panamá</div><div class="cc-erp">Odoo · ITBMS</div><div class="cc-dots"><div class="ccd" style="background:var(--green)"></div><div class="ccd" style="background:var(--bg4)"></div><div class="ccd" style="background:var(--bg4)"></div></div></div>
+          <div class="cc"><div class="cc-top"><span class="cc-f">🇨🇷</span><span class="cc-st" style="background:var(--amber3);color:var(--amber)">W2</span></div><div class="cc-nm">Costa Rica</div><div class="cc-erp">Odoo · IVA</div><div class="cc-dots"><div class="ccd" style="background:var(--green)"></div><div class="ccd" style="background:var(--bg4)"></div><div class="ccd" style="background:var(--bg4)"></div></div></div>
+        </div>
+        <div style="margin-top:8px;font-size:8.5px;color:var(--t3)">Complejidad fiscal: ● baja &nbsp; ●● media &nbsp; ●●● alta</div>
+      </div>
+      <div class="panel" style="margin-bottom:0">
+        <div class="ph">Monitor de Triggers M15+</div>
+        <div class="trig-list">
+          <div class="trig-item urgent"><div class="trig-hdr"><span class="trig-nm">Controller MX contratar</span><span class="rlvl" style="background:var(--red3);color:var(--red)">Urgente</span></div><div class="trig-body">Sin esto Wave 1 no arranca con seguridad</div><div class="meter-wrap"><div class="meter-bg"><div class="meter-fill" style="width:0%;background:var(--red)"></div></div><div class="meter-lbl">Pendiente</div></div></div>
+          <div class="trig-item"><div class="trig-hdr"><span class="trig-nm">Overhead dual vs $40K/yr</span><span class="rlvl" style="background:var(--green3);color:var(--green)">Monitor</span></div><div class="trig-body">Trigger migración CO/CA si supera $3.3K/mes × 6 meses</div><div class="meter-wrap"><div class="meter-bg"><div class="meter-fill" style="width:0%;background:var(--green)"></div></div><div class="meter-lbl">$0 / $3.3K</div></div></div>
+          <div class="trig-item"><div class="trig-hdr"><span class="trig-nm">Escalación Oracle NS</span><span class="rlvl" style="background:var(--amber3);color:var(--amber)">Negociando</span></div><div class="trig-body">Trigger migración acelerada si renovación &gt;+15%</div><div class="meter-wrap"><div class="meter-bg"><div class="meter-fill" style="width:25%;background:var(--amber)"></div></div><div class="meter-lbl">~5% est.</div></div></div>
+          <div class="trig-item"><div class="trig-hdr"><span class="trig-nm">Reconciliación API</span><span class="rlvl" style="background:var(--green3);color:var(--green)">OK</span></div><div class="trig-body">Alerta si cae bajo 99.5% · Objetivo: 100%</div><div class="meter-wrap"><div class="meter-bg"><div class="meter-fill" style="width:100%;background:var(--green)"></div></div><div class="meter-lbl">100% ✓</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE 2: GANTT 9 PAÍSES COMPLETO
+     ══════════════════════════════════════════════════════ -->
+<div class="page" id="p2">
+  <div class="panel">
+    <div class="ph">Gantt de implementación — 15 meses · todos los países · NetSuite CO/CA sin interrupción <span>Renegociación NS activa desde M1 en paralelo</span></div>
+    <div style="overflow-x:auto">
+    <div style="min-width:700px">
+      <div class="gmonths" style="grid-template-columns:120px repeat(15,1fr)">
+        <div style="text-align:left;font-size:9px;color:var(--t3)">Actividad</div>
+        <div>M1</div><div>M2</div><div>M3</div><div>M4</div><div>M5</div><div>M6</div><div>M7</div><div>M8</div><div>M9</div><div>M10</div><div>M11</div><div>M12</div><div>M13</div><div>M14</div><div>M15+</div>
+      </div>
+
+      <div id="gantt-rows"></div>
+    </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
+      <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--t3)"><div style="width:8px;height:8px;border-radius:2px;background:#2f81f7"></div>F1 Diseño</div>
+      <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--t3)"><div style="width:8px;height:8px;border-radius:2px;background:#1a6640"></div>F2 MVE México</div>
+      <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--t3)"><div style="width:8px;height:8px;border-radius:2px;background:#2a7a52"></div>F3 Wave 2 (PE/AR/DO/ES/PA/CR)</div>
+      <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--t3)"><div style="width:8px;height:8px;border-radius:2px;background:#8c5a0a"></div>F4 Consolidación</div>
+      <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--t3)"><div style="width:8px;height:8px;border-radius:2px;background:#8c1a1a"></div>F5 Evaluar CO/CA</div>
+      <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--t3)"><div style="width:8px;height:8px;border-radius:2px;background:#39d3bb"></div>Renegociación NS (paralela)</div>
+      <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--t3)"><div style="width:8px;height:8px;border-radius:2px;background:#484f58"></div>NetSuite CO+CA (sin interrupción)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE 3: COMPARATIVO ERPs (datos reales documento Julián)
+     ══════════════════════════════════════════════════════ -->
+<div class="page" id="p3">
+  <div class="panel">
+    <div class="ph">Matriz de Cumplimiento ERP — 11 plataformas evaluadas <span>Fuente: Análisis Alternativas Julián CFO · Marzo 2026</span></div>
+    <div style="overflow-x:auto">
+    <table class="xtbl">
+      <thead>
+        <tr>
+          <th>Requisito</th>
+          <th>NetSuite</th>
+          <th style="color:var(--blue)">Odoo Ent.<br><small style="font-size:7px;opacity:.7">Seleccionado</small></th>
+          <th style="color:#7c9fcf">Sage Intacct</th>
+          <th>D365 Finance</th>
+          <th>SAP B1</th>
+          <th>Zoho Fin.</th>
+          <th>ERPNext</th>
+          <th>Alegra/Siigo</th>
+          <th>Holded</th>
+        </tr>
+      </thead>
+      <tbody id="xtbl-body"></tbody>
+    </table>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:10px;flex-wrap:wrap;font-size:8.5px;color:var(--t3)">
+      <span><span class="pip psi">SI</span> Nativo</span>
+      <span><span class="pip ppa">PARCIAL</span> Con personalización/módulos terceros</span>
+      <span><span class="pip pno">NO</span> No disponible</span>
+    </div>
+    <div style="margin-top:6px;font-size:9px;color:var(--t3);line-height:1.5">
+      <strong style="color:var(--amber)">Nota Odoo:</strong> v18/19 incorpora multi-ledger para NIIF + GAAP local simultáneo y consolidación con eliminaciones IC. Limitación crítica: consolidación multimoneda no calcula diferencias de conversión (ORI/IAS 21), lo que genera desbalance en balance consolidado. Solución: data layer Python con extracción PostgreSQL.<br>
+      <strong style="color:var(--t2)">Nota SAP B1:</strong> Buenas localizaciones LATAM pero sin consolidación real. Para consolidación se requiere SAP S/4HANA (costo prohibitivo para escala actual).
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE 4: TCO & COSTOS (datos reales documento Julián)
+     ══════════════════════════════════════════════════════ -->
+<div class="page" id="p4">
+  <div class="ph" style="margin-bottom:10px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--t3)">Comparativo TCO — 4 alternativas viables · datos verificados contra fuentes web · marzo 2026</div>
+
+  <div class="cost-grid">
+    <div class="cost-card highlight" style="border-color:var(--teal)">
+      <div class="cc-hdr"><div class="cc-name" style="color:var(--teal)">Renegociar NetSuite</div><span class="rlvl" style="background:var(--teal3);color:var(--teal);font-size:8px;padding:1px 5px;border-radius:8px">MENOR RIESGO</span></div>
+      <div class="cc-year1" style="color:var(--teal)">$29K–$60K/yr</div>
+      <div style="font-size:8.5px;color:var(--t3)">Con descuento 15–25% negociado</div>
+      <div class="cc-rows">
+        <div class="cc-row"><span>Precio actual</span><span>$36K–$80K/yr</span></div>
+        <div class="cc-row"><span>Descuento objetivo</span><span>15–25%</span></div>
+        <div class="cc-row"><span>Ahorro anual</span><span>$5K–$20K/yr</span></div>
+        <div class="cc-row"><span>Costo migración</span><span style="color:var(--green)">$0</span></div>
+        <div class="cc-row"><span>TCO 5 años</span><span>$145K–$300K</span></div>
+        <div class="cc-row"><span>Punto equilibrio</span><span style="color:var(--teal)">Inmediato</span></div>
+      </div>
+    </div>
+    <div class="cost-card highlight" style="border-color:var(--blue)">
+      <div class="cc-hdr"><div class="cc-name" style="color:var(--blue)">NS + Odoo (Opción 1)</div><span class="rlvl" style="background:var(--blue3);color:var(--blue);font-size:8px;padding:1px 5px;border-radius:8px">RECOMENDADA</span></div>
+      <div class="cc-year1" style="color:var(--blue)">$127K–$294K</div>
+      <div style="font-size:8.5px;color:var(--t3)">Año 1 con implementación Odoo 7 países</div>
+      <div class="cc-rows">
+        <div class="cc-row"><span>Licencia Odoo (7 países)</span><span>$5.6K–$13.8K/yr</span></div>
+        <div class="cc-row"><span>NS CO+CA (negociado)</span><span>$29K–$60K/yr</span></div>
+        <div class="cc-row"><span>Implementación Odoo</span><span>$30K–$70K</span></div>
+        <div class="cc-row"><span>Config + APIs</span><span>$20K–$50K</span></div>
+        <div class="cc-row"><span>Recurrente Año 2+</span><span style="color:var(--green)">$39K–$82K/yr</span></div>
+        <div class="cc-row"><span>TCO 5 años (esperado)</span><span style="color:var(--blue)">$315K</span></div>
+      </div>
+    </div>
+    <div class="cost-card">
+      <div class="cc-hdr"><div class="cc-name">Sage Intacct</div><span class="rlvl" style="background:var(--amber3);color:var(--amber);font-size:8px;padding:1px 5px;border-radius:8px">RIESGO MODERADO</span></div>
+      <div class="cc-year1" style="color:var(--amber)">$154K–$354K</div>
+      <div style="font-size:8.5px;color:var(--t3)">Año 1 con migración completa</div>
+      <div class="cc-rows">
+        <div class="cc-row"><span>Licencia anual</span><span>$15K–$40K/yr</span></div>
+        <div class="cc-row"><span>Subsidiarias adicionales</span><span>$6K–$12K/yr</span></div>
+        <div class="cc-row"><span>Migración completa</span><span>$40K–$80K</span></div>
+        <div class="cc-row"><span>Config + localizaciones</span><span>$25K–$50K</span></div>
+        <div class="cc-row"><span>Recurrente Año 2+</span><span>$26K–$64K/yr</span></div>
+        <div class="cc-row"><span>TCO 5 años</span><span>$258K–$610K</span></div>
+        <div class="cc-row"><span>Punto equilibrio</span><span style="color:var(--red)">4–6 años</span></div>
+      </div>
+    </div>
+    <div class="cost-card">
+      <div class="cc-hdr"><div class="cc-name">Dynamics 365 Finance</div><span class="rlvl" style="background:var(--red3);color:var(--red);font-size:8px;padding:1px 5px;border-radius:8px">MAYOR RIESGO/COSTO</span></div>
+      <div class="cc-year1" style="color:var(--red)">$186K–$463K</div>
+      <div style="font-size:8.5px;color:var(--t3)">Año 1 · 20 usuarios · 7 países</div>
+      <div class="cc-rows">
+        <div class="cc-row"><span>Licencia (~20 users)</span><span>$24K–$60K/yr</span></div>
+        <div class="cc-row"><span>Implementación</span><span>$50K–$120K</span></div>
+        <div class="cc-row"><span>Config fiscal LatAm</span><span>$10K–$25K</span></div>
+        <div class="cc-row"><span>Recurrente Año 2+</span><span>$29K–$75K/yr</span></div>
+        <div class="cc-row"><span>TCO 5 años</span><span>$302K–$763K</span></div>
+        <div class="cc-row"><span>Punto equilibrio</span><span style="color:var(--red)">+7 años</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="ph">TCO comparativo 5 años — barras horizontales (USD K)</div>
+    <div class="scbtns">
+      <button class="scb on" onclick="setTCO('mid',this)">Caso medio</button>
+      <button class="scb" onclick="setTCO('low',this)">Mejor caso</button>
+      <button class="scb" onclick="setTCO('high',this)">Peor caso</button>
+    </div>
+    <div id="tco-bars" class="tcowrap"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE 5: ANÁLISIS DE RIESGO COMPLETO
+     ══════════════════════════════════════════════════════ -->
+<div class="page" id="p5">
+  <div class="g2">
+    <div class="panel">
+      <div class="ph">Registro de Riesgos — Factor Humano y Operativo</div>
+      <table class="rtbl">
+        <thead><tr><th>Riesgo</th><th>P</th><th>I</th><th>Nivel</th></tr></thead>
+        <tbody>
+          <tr><td>Controller MX inexistente (CFDI/DIOT/SAT)</td><td style="text-align:center">4</td><td style="text-align:center">4</td><td><span class="rlvl" style="background:var(--red3);color:var(--red)">Crítico</span></td></tr>
+          <tr><td>Key person sale (Finance Lead / Controller CO)</td><td style="text-align:center">4</td><td style="text-align:center">5</td><td><span class="rlvl" style="background:var(--red3);color:var(--red)">Crítico</span></td></tr>
+          <tr><td>Equipo 7 personas no sostiene 2 ERPs</td><td style="text-align:center">3</td><td style="text-align:center">4</td><td><span class="rlvl" style="background:var(--red3);color:var(--red)">Crítico</span></td></tr>
+          <tr><td>Partner Odoo baja calidad / sin experiencia LATAM</td><td style="text-align:center">3</td><td style="text-align:center">4</td><td><span class="rlvl" style="background:var(--red3);color:var(--red)">Crítico</span></td></tr>
+          <tr><td>Odoo ORI/IAS 21 no resuelto — desbalance consolidado</td><td style="text-align:center">3</td><td style="text-align:center">4</td><td><span class="rlvl" style="background:var(--red3);color:var(--red)">Crítico</span></td></tr>
+          <tr><td>Consolidación cross-system rechazada por auditor</td><td style="text-align:center">2</td><td style="text-align:center">4</td><td><span class="rlvl" style="background:var(--amber3);color:var(--amber)">Alto</span></td></tr>
+          <tr><td>Oracle sube precio NS renovación &gt;15%</td><td style="text-align:center">3</td><td style="text-align:center">3</td><td><span class="rlvl" style="background:var(--amber3);color:var(--amber)">Alto</span></td></tr>
+          <tr><td>l10n_ar Argentina — IIBB 24 provincias incompleto</td><td style="text-align:center">3</td><td style="text-align:center">3</td><td><span class="rlvl" style="background:var(--amber3);color:var(--amber)">Alto</span></td></tr>
+          <tr><td>Fatiga de cambio en M8–10 (Wave 1 + Wave 2)</td><td style="text-align:center">4</td><td style="text-align:center">3</td><td><span class="rlvl" style="background:var(--amber3);color:var(--amber)">Alto</span></td></tr>
+          <tr><td>IAS 29 Argentina sin asesor externo</td><td style="text-align:center">3</td><td style="text-align:center">3</td><td><span class="rlvl" style="background:var(--amber3);color:var(--amber)">Alto</span></td></tr>
+          <tr><td>IC desbalances NS↔Odoo no detectados</td><td style="text-align:center">2</td><td style="text-align:center">3</td><td><span class="rlvl" style="background:var(--green3);color:var(--green)">Medio</span></td></tr>
+          <tr><td>Sage Intacct sin localización LATAM profunda</td><td style="text-align:center">N/A</td><td style="text-align:center">4</td><td><span class="rlvl" style="background:var(--green3);color:var(--green)">Informativo</span></td></tr>
+          <tr><td>D365 Finance — implementación $50K–$120K mínimo</td><td style="text-align:center">N/A</td><td style="text-align:center">5</td><td><span class="rlvl" style="background:var(--green3);color:var(--green)">Informativo</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="panel">
+      <div class="ph">Riesgo de Migración por Alternativa</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="padding:10px;background:var(--teal3);border:1px solid rgba(57,211,187,.3);border-radius:5px">
+          <div style="font-size:10.5px;font-weight:700;color:var(--teal);margin-bottom:4px">Renegociar NetSuite</div>
+          <div style="font-size:9px;color:var(--t2);line-height:1.5">Riesgo: MUY BAJO. Costo: $0 de migración. Ahorro esperado: $5K–20K/año. Dependencia Oracle persiste. Acción: contactar con alternativas como leverage.</div>
+        </div>
+        <div style="padding:10px;background:var(--blue3);border:1px solid rgba(47,129,247,.3);border-radius:5px">
+          <div style="font-size:10.5px;font-weight:700;color:var(--blue);margin-bottom:4px">NS + Odoo (Opción 1) — RECOMENDADA</div>
+          <div style="font-size:9px;color:var(--t2);line-height:1.5">Riesgo CO/CA: CERO (no se toca). Riesgo Odoo 7 países: BAJO (greenfield). Riesgo ORI: MEDIO (data layer Python mitiga). Punto de equilibrio vs migración total: M24+.</div>
+        </div>
+        <div style="padding:10px;background:var(--bg3);border:1px solid var(--b);border-radius:5px">
+          <div style="font-size:10.5px;font-weight:700;color:var(--t);margin-bottom:4px">Sage Intacct (si NS insostenible)</div>
+          <div style="font-size:9px;color:var(--t2);line-height:1.5">Riesgo: MODERADO. Migración $130K–$300K. Sin localización LATAM profunda: necesita herramientas locales para CO/AR/PE/RD. Equilibrio: 4–6 años. Elegir solo si NS sube precio agresivamente.</div>
+        </div>
+        <div style="padding:10px;background:var(--red3);border:1px solid rgba(248,81,73,.2);border-radius:5px">
+          <div style="font-size:10.5px;font-weight:700;color:var(--red);margin-bottom:4px">Dynamics 365 Finance</div>
+          <div style="font-size:9px;color:var(--t2);line-height:1.5">Riesgo: ALTO. Implementación $50K–$120K. TCO 5 años: $302K–$763K. Equilibrio: +7 años. Viable solo con revenue &gt;$15M o 15+ entidades. NO recomendado escala actual.</div>
+        </div>
+        <div style="padding:10px;background:var(--red3);border:1px solid rgba(248,81,73,.2);border-radius:5px">
+          <div style="font-size:10.5px;font-weight:700;color:var(--red);margin-bottom:4px">Migrar CO+CA hoy (Opción 2)</div>
+          <div style="font-size:9px;color:var(--t2);line-height:1.5">Riesgo: MÁXIMO. Migración CO: $40K–$100K + 500–1000h internas. 4–6 meses disruption. Probabilidad de fallo: 15–20%. Costo recuperación: $130–$250K. NO recomendado hasta M15+.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="ph">Costo de fallo por escenario (USD) <span>Fuente: análisis TCO Julián CFO</span></div>
+    <div style="overflow-x:auto">
+    <table class="rtbl">
+      <thead><tr><th>Escenario de fallo</th><th>Prob.</th><th>Costo directo</th><th>Costo indirecto</th><th>Total impacto</th><th>Tiempo recuperación</th></tr></thead>
+      <tbody>
+        <tr><td>Migración CO falla a mitad de ejecución</td><td>15–20%</td><td>$50K–$100K</td><td>$80K–$150K</td><td style="color:var(--red);font-weight:600">$130K–$250K</td><td>6–12 meses</td></tr>
+        <tr><td>Overhead dual insostenible (trigger $40K)</td><td>20–25%</td><td>$40K–$100K migración</td><td>$15K–$30K disruption</td><td style="color:var(--amber);font-weight:600">$55K–$130K</td><td>4–8 meses</td></tr>
+        <tr><td>Consolidación rechazada por auditor</td><td>15–20%</td><td>$15K–$25K especialista</td><td>$30K–$50K</td><td style="color:var(--amber);font-weight:600">$45K–$75K</td><td>3–6 meses</td></tr>
+        <tr><td>Oracle renovación +20% (NS escalation)</td><td>30–40%</td><td>$0 contractual</td><td>$20K–$50K/yr erosión margen</td><td style="color:var(--amber);font-weight:600">$60K–$150K (3yr)</td><td>Ongoing</td></tr>
+        <tr><td>Odoo partner LATAM falla</td><td>25%</td><td>$20K–$40K rebasing</td><td>$15K–$30K delay</td><td style="color:var(--green);font-weight:600">$35K–$70K</td><td>2–3 meses</td></tr>
+        <tr><td>Key finance person sale</td><td>40–50%</td><td>$8K–$15K/mes contractor</td><td>$20K–$40K delay</td><td style="color:var(--amber);font-weight:600">$44K–$85K</td><td>3–6 meses</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE 6: ÁRBOL DE DECISIÓN M15+
+     ══════════════════════════════════════════════════════ -->
+<div class="page" id="p6">
+  <div class="rbox" style="margin-bottom:12px">
+    <div class="rtitle">Estrategia de Renegociación NetSuite — Acción Inmediata (M1–M3)</div>
+    <div class="rbody">
+      <strong style="color:var(--teal)">Paso 1:</strong> Revisar exactamente qué módulos y usuarios tienen activos en NetSuite. <strong style="color:var(--teal)">Paso 2:</strong> Contactar a Oracle/NetSuite mencionando que se están evaluando Sage Intacct y Odoo Enterprise como alternativas (esto es leverage real, no bluff — las demos se están solicitando). <strong style="color:var(--teal)">Paso 3:</strong> Negociar descuento 15–25% por renovación anticipada multi-anual + tope de incremento 3–5%/año. <strong style="color:var(--teal)">Paso 4:</strong> Desactivar usuarios y módulos sin uso. <strong style="color:var(--teal)">Resultado esperado:</strong> $29K–$60K/año vs $36K–$80K actual. Ahorro $5K–$20K/año con riesgo cero.
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="ph">Árbol de decisión M15+ — 5 escenarios con acciones predefinidas</div>
+    <div class="dtree">
+      <div class="dnode"><div class="dnum" style="background:var(--green3);color:var(--green);font-size:11px">A</div><div><div class="dn-ttl">Todo funciona bien (prob. 40–50%)</div><div class="dn-period">Overhead &lt;$40K/yr · Auditoría OK · NS renovación estable</div><div class="dn-body">MANTENER arquitectura dual NS+Odoo. Review anual. Renegociar NS cada 2–3 años. No migrar CO/CA a menos que cambien condiciones.</div></div><div class="dn-status" style="background:var(--green3);color:var(--green)">Mantener</div></div>
+
+      <div class="dnode"><div class="dnum" style="background:var(--amber3);color:var(--amber);font-size:11px">B</div><div><div class="dn-ttl">Overhead dual insostenible (prob. 20–25%)</div><div class="dn-period">Overhead &gt;$40K/yr por 6+ meses consecutivos</div><div class="dn-body">PLANIFICAR migración CO/CA a Odoo. Odoo ya está probado en 7 países. Timeline: M15–18 planificación + M19–24 ejecución. Ahorro neto: $50–60K/yr en licencias NS eliminadas.</div></div><div class="dn-status" style="background:var(--amber3);color:var(--amber)">Migrar a Odoo</div></div>
+
+      <div class="dnode"><div class="dnum" style="background:var(--red3);color:var(--red);font-size:11px">C</div><div><div class="dn-ttl">Oracle sube precio NS &gt;15% (prob. 15–20%)</div><div class="dn-period">Propuesta renovación con incremento superior al 15%</div><div class="dn-body">ACELERAR migración a Odoo. Negociar bridge pricing 12 meses máximo. CO/CA ya tiene proof-of-concept Odoo. Migrar en 6–8 meses. Sage Intacct como alternativa B si Odoo falla en consolidación.</div></div><div class="dn-status" style="background:var(--red3);color:var(--red)">Acelerar migración</div></div>
+
+      <div class="dnode"><div class="dnum" style="background:var(--red3);color:var(--red);font-size:11px">D</div><div><div class="dn-ttl">Consolidación falla auditoría (prob. 10–15%)</div><div class="dn-period">Opinión calificada o hallazgo material en consolidación</div><div class="dn-body">Si causa es data quality: remediar extracción/normalización ($15–25K, 2–3 meses). Si causa es arquitectural: migrar CO/CA a Odoo (single-system simplifica consolidación). Considerar Sage Intacct si Odoo no resuelve ORI nativo.</div></div><div class="dn-status" style="background:var(--red3);color:var(--red)">Remediar urgente</div></div>
+
+      <div class="dnode"><div class="dnum" style="background:var(--purple3);color:var(--purple);font-size:11px">E</div><div><div class="dn-ttl">Crecimiento a 15+ entidades / $15M+ revenue</div><div class="dn-period">Adquisición orgánica o inorgánica que supera escala actual</div><div class="dn-body">RE-EVALUAR D365 Finance o SAP S/4HANA como plataforma de consolidación enterprise. A esta escala ambas se justifican económicamente. Estudio de plataforma: 3–4 meses. Implementación: 12–18 meses.</div></div><div class="dn-status" style="background:var(--purple3);color:var(--purple)">Evaluar D365/S4</div></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="ph">Próximos 30 días — acciones inmediatas con owners y costos</div>
+    <table class="rtbl">
+      <thead><tr><th>#</th><th>Acción</th><th>Owner</th><th>Deadline</th><th>Costo</th></tr></thead>
+      <tbody>
+        <tr style="background:rgba(47,129,247,.06)"><td style="text-align:center;font-weight:700;color:var(--blue)">1</td><td><strong>Junta aprueba Opción 1 + presupuesto MVE $35K–70K</strong></td><td>Board/CFO</td><td>Esta sesión</td><td style="color:var(--green);font-family:monospace">$0</td></tr>
+        <tr style="background:rgba(57,211,187,.06)"><td style="text-align:center;font-weight:700;color:var(--teal)">2</td><td><strong>Iniciar renegociación NetSuite con leverage Odoo+Sage</strong></td><td>CFO Julián</td><td>Semana 1</td><td style="font-family:monospace;color:var(--teal)">$0 → ahorra $5–20K/yr</td></tr>
+        <tr><td style="text-align:center;font-weight:700;color:var(--blue)">3</td><td>Emitir RFP a 3–5 partners Odoo con portafolio LATAM (MX obligatorio)</td><td>CDO</td><td>Semana 1</td><td style="font-family:monospace">$0</td></tr>
+        <tr style="background:rgba(248,81,73,.05)"><td style="text-align:center;font-weight:700;color:var(--red)">4</td><td><strong>Contratar Controller México Senior (CFDI 4.0, DIOT, SAT)</strong></td><td>CFO/RRHH</td><td>Semana 2</td><td style="font-family:monospace;color:var(--amber)">$1.5K–2.5K/mes</td></tr>
+        <tr><td style="text-align:center;font-weight:700;color:var(--blue)">5</td><td>Reunión auditores externos: presentar arquitectura dual-ERP</td><td>CFO</td><td>Semana 2</td><td style="font-family:monospace">$0</td></tr>
+        <tr><td style="text-align:center;font-weight:700;color:var(--blue)">6</td><td>Seleccionar partner Odoo (de RFP). Firmar SOW con hitos.</td><td>CDO+CFO</td><td>Semana 4</td><td style="font-family:monospace">$5K–15K</td></tr>
+        <tr><td style="text-align:center;font-weight:700;color:var(--blue)">7</td><td>Finance Lead: mapeo CoA NS (CO/CA) → CoA Global v0.1</td><td>Finance Lead</td><td>Semana 4</td><td style="font-family:monospace">$0</td></tr>
+        <tr style="background:rgba(47,129,247,.05)"><td colspan="4" style="text-align:right;font-weight:700;padding-right:12px;color:var(--t2)">Total cash primeros 30 días</td><td style="font-family:monospace;font-weight:700;color:var(--blue)">$5K–15K</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+function pg(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.navb').forEach(b => b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  btn.classList.add('on');
+}
+
+const ganttRows = [
+  {lbl:'Fase 1',sub:'Diseño Global + CoA', segs:{1:'#2f81f7',2:'#2f81f7',3:'#2f81f7'}},
+  {lbl:'F2 MVE México',sub:'CFDI 4.0 · DIOT · SAT', segs:{4:'#1a6640',5:'#1a6640',6:'#1a6640',7:'#1a6640',8:'#1a6640'}},
+  {lbl:'F3 Perú + Argentina',sub:'Wave 1 · PLE · IAS 29', segs:{5:'#2a7a52',6:'#2a7a52',7:'#2a7a52',8:'#2a7a52',9:'#2a7a52',10:'#2a7a52'}},
+  {lbl:'F3 DO + ES + PA + CR',sub:'Wave 2 · SII · 606/607', segs:{9:'#2a7a52',10:'#2a7a52',11:'#2a7a52'}},
+  {lbl:'Fase 4',sub:'Consolidación IAS 21', segs:{12:'#8c5a0a',13:'#8c5a0a',14:'#8c5a0a'}},
+  {lbl:'Fase 5',sub:'Evaluar CO + CA', segs:{15:'#8c1a1a'}},
+  {lbl:'Renegoc. NetSuite',sub:'Leverage Odoo/Sage', segs:{1:'#1a4a46',2:'#1a4a46',3:'#39d3bb',4:'#1a4a46',5:'#1a4a46'}},
+  {lbl:'NetSuite CO + CA',sub:'Sin interrupción', segs:{1:'ns',2:'ns',3:'ns',4:'ns',5:'ns',6:'ns',7:'ns',8:'ns',9:'ns',10:'ns',11:'ns',12:'ns',13:'ns',14:'ns',15:'eval'}},
+  {lbl:'Controller MX',sub:'Contratar semana 2', segs:{1:'#0f3d28',2:'#0f3d28',3:'#0f3d28',4:'#1a6640',5:'#1a6640',6:'#1a6640',7:'#1a6640',8:'#1a6640',9:'#2a7a52',10:'#2a7a52',11:'#2a7a52',12:'#2a7a52',13:'#2a7a52',14:'#2a7a52',15:'#2a7a52'}},
+];
+
+const labels = {1:'D',2:'',3:'✓',4:'B',5:'',6:'T',7:'U',8:'GL',9:'C',10:'UAT',11:'GL',12:'P',13:'IC',14:'✓',15:'?'};
+const nsLabels = {1:'NS',2:'NS',3:'NS',4:'NS',5:'NS',6:'NS',7:'NS',8:'NS',9:'NS',10:'NS',11:'NS',12:'NS',13:'NS',14:'NS',15:'¿?'};
+const mxLabels = {1:'Onb',2:'',3:'D',4:'B',5:'',6:'UAT',7:'',8:'GL',9:'BAU',10:'BAU',11:'BAU',12:'BAU',13:'BAU',14:'BAU',15:'BAU'};
+const renegLabels = {1:'Inicio',2:'',3:'Acuerdo',4:'Impl',5:''};
+
+const cont = document.getElementById('gantt-rows');
+ganttRows.forEach(r => {
+  const row = document.createElement('div');
+  row.className = 'grow2';
+  row.style.gridTemplateColumns = '120px repeat(15,1fr)';
+  let html = `<div class="glbl" style="font-size:9px">${r.lbl}<small>${r.sub}</small></div>`;
+  for(let i=1;i<=15;i++){
+    const c = r.segs[i];
+    if(!c){ html+=`<div class="gcell2"></div>`; continue; }
+    if(c==='ns'){
+      html+=`<div class="gcell2"><div class="gbar2" style="background:#21262d;color:#484f58;border:1px solid #30363d">${nsLabels[i]||''}</div></div>`;
+    } else if(c==='eval'){
+      html+=`<div class="gcell2"><div class="gbar2" style="background:#1f4f8a;color:#2f81f7">¿?</div></div>`;
+    } else {
+      const txt = r.lbl.includes('Controller') ? (mxLabels[i]||'') : r.lbl.includes('Renegoc') ? (renegLabels[i]||'') : (labels[i]||'');
+      html+=`<div class="gcell2"><div class="gbar2" style="background:${c};color:rgba(255,255,255,.85)">${txt}</div></div>`;
+    }
+  }
+  row.innerHTML = html;
+  cont.appendChild(row);
+  if(r.lbl==='Fase 5'||r.lbl==='NetSuite CO + CA'){
+    const sep = document.createElement('div');
+    sep.style.cssText='height:1px;background:rgba(255,255,255,.07);margin:3px 0';
+    cont.insertBefore(sep, row);
+  }
+});
+
+const matrixData = [
+  ['Multibook (NIIF + Local)','SI','PARCIAL','SI','SI','NO','NO','NO','NO'],
+  ['Multimoneda + Revaluación','SI','SI','SI','SI','SI','SI','PARCIAL','PARCIAL'],
+  ['Consolidación automática','SI','PARCIAL','SI','SI','NO','NO','NO','NO'],
+  ['Eliminaciones intragrupo','SI','PARCIAL','SI','SI','NO','NO','NO','NO'],
+  ['ORI en separado (IAS 21)','SI','NO','SI','PARCIAL','NO','NO','NO','NO'],
+  ['Conversión EF subsidiarias','SI','PARCIAL','SI','SI','NO','NO','NO','NO'],
+  ['Patrimonio tasa histórica','SI','NO','SI','PARCIAL','NO','NO','NO','NO'],
+  ['Impuesto diferido consol.','SI','NO','PARCIAL','PARCIAL','NO','NO','NO','NO'],
+  ['NIIF 15 automatizado','SI','NO','PARCIAL','PARCIAL','NO','PARCIAL','NO','NO'],
+  ['API personalizada','SI','SI','SI','SI','SI','PARCIAL','NO','PARCIAL'],
+  ['Conciliación bancaria auto','SI','SI','SI','SI','SI','SI','SI','SI'],
+  ['Activos fijos / Intangibles','SI','SI','SI','SI','PARCIAL','SI','PARCIAL','PARCIAL'],
+  ['Localización CO (Exógena)','SI','PARCIAL','SI','PARCIAL','NO','SI','PARCIAL','NO'],
+  ['Localización AR (IIBB)','SI','PARCIAL','SI','PARCIAL','NO','NO','NO','NO'],
+  ['Localización PE (PLE)','SI','PARCIAL','SI','PARCIAL','NO','PARCIAL','NO','NO'],
+  ['Localización MX (CFDI)','SI','SI','SI','SI','SI','SI','PARCIAL','PARCIAL'],
+  ['Localización ES (SII)','SI','SI','SI','SI','SI','NO','NO','SI'],
+  ['Localización PA/CR/RD','SI','PARCIAL','PARCIAL','PARCIAL','NO','PARCIAL','NO','NO'],
+  ['Multicentros de costos','SI','SI','SI','SI','PARCIAL','NO','NO','PARCIAL'],
+];
+const tbody = document.getElementById('xtbl-body');
+matrixData.forEach(row => {
+  const tr = document.createElement('tr');
+  row.forEach((cell,i) => {
+    const td = document.createElement('td');
+    if(i===0){td.textContent=cell;return tr.appendChild(td)}
+    const cls = cell==='SI'?'psi':cell==='PARCIAL'?'ppa':'pno';
+    td.innerHTML=`<span class="pip ${cls}">${cell}</span>`;
+    if(i===1) td.className='rec';
+    if(i===3) td.className='rec2';
+    tr.appendChild(td);
+  });
+  tbody.appendChild(tr);
+});
+
+const tcoData = {
+  mid:{
+    items:[
+      {lbl:'NS+Odoo (Opción 1)',yr1:250,yr5:315,color:'#2f81f7',ref:315},
+      {lbl:'Renegociar NS',yr1:55,yr5:220,color:'#39d3bb',ref:315},
+      {lbl:'Sage Intacct',yr1:254,yr5:434,color:'#d29922',ref:315},
+      {lbl:'Full Odoo (Opción 2)',yr1:205,yr5:196,color:'#3fb950',ref:315},
+      {lbl:'D365 Finance',yr1:325,yr5:533,color:'#f85149',ref:315},
+      {lbl:'Full NetSuite (Op.3)',yr1:80,yr5:625,color:'#bc8cff',ref:315},
+    ]
+  },
+  low:{
+    items:[
+      {lbl:'NS+Odoo (Opción 1)',yr1:165,yr5:210,color:'#2f81f7',ref:210},
+      {lbl:'Renegociar NS',yr1:36,yr5:145,color:'#39d3bb',ref:210},
+      {lbl:'Sage Intacct',yr1:154,yr5:258,color:'#d29922',ref:210},
+      {lbl:'Full Odoo (Opción 2)',yr1:128,yr5:120,color:'#3fb950',ref:210},
+      {lbl:'D365 Finance',yr1:186,yr5:302,color:'#f85149',ref:210},
+      {lbl:'Full NetSuite (Op.3)',yr1:36,yr5:350,color:'#bc8cff',ref:210},
+    ]
+  },
+  high:{
+    items:[
+      {lbl:'NS+Odoo (Opción 1)',yr1:330,yr5:445,color:'#2f81f7',ref:445},
+      {lbl:'Renegociar NS',yr1:80,yr5:300,color:'#39d3bb',ref:445},
+      {lbl:'Sage Intacct',yr1:354,yr5:610,color:'#d29922',ref:445},
+      {lbl:'Full Odoo (Opción 2)',yr1:294,yr5:303,color:'#3fb950',ref:445},
+      {lbl:'D365 Finance',yr1:463,yr5:763,color:'#f85149',ref:445},
+      {lbl:'Full NetSuite (Op.3)',yr1:80,yr5:900,color:'#bc8cff',ref:445},
+    ]
+  }
+};
+
+function setTCO(k, btn){
+  document.querySelectorAll('.scb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const items = tcoData[k].items;
+  const maxAll = Math.max(...items.map(d=>d.yr5));
+  const wrap = document.getElementById('tco-bars');
+  wrap.innerHTML = items.map(d=>{
+    const w1 = Math.round(d.yr1/maxAll*100);
+    const w5 = Math.round(d.yr5/maxAll*100);
+    return `<div class="tco-row"><div class="tco-lbl">${d.lbl}</div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+        <div class="tco-bar-bg" title="Año 1: $${d.yr1}K"><div class="tco-fill" style="width:${w1}%;background:${d.color};opacity:.7">Año 1: $${d.yr1}K</div></div>
+        <div class="tco-bar-bg" title="TCO 5 años: $${d.yr5}K"><div class="tco-fill" style="width:${w5}%;background:${d.color}">5 años: $${d.yr5}K</div></div>
+      </div></div>`;
+  }).join('');
+}
+setTCO('mid',document.querySelector('.scb.on'));
+</script>
